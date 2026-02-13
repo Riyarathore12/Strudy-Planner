@@ -9,9 +9,11 @@ A productivity-focused web application designed to help students organize their 
 - Custom mnemonics generation using Groq (Llama-3)
 - Deep-dive explanations for better retention
 - Dynamic responsive UI
-- <img width="1366" height="768" alt="image" src="https://github.com/user-attachments/assets/3e6575c1-b4bc-47f1-93f7-7075ac3baa7e" />
-- <img width="1366" height="768" alt="image" src="https://github.com/user-attachments/assets/b0f3a8ba-58b4-4bc3-bee5-decda28e7e60" />
+- <img width="1328" height="667" alt="image" src="https://github.com/user-attachments/assets/4ca35cbf-475d-446d-adbc-bcce6f62633c" />
 
+- <img width="1347" height="657" alt="image" src="https://github.com/user-attachments/assets/2523839f-3e2d-464c-bec2-0239a45e23e9" />
+
+-
 
 ## 🛠 Tech Stack
 
