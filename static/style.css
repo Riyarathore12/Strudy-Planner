@@ -1,0 +1,28 @@
+body {
+    background-color: #f0f2f5;
+    font-family: 'Inter', sans-serif;
+}
+
+.card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+}
+
+.btn-primary {
+    background-color: #4361ee;
+    border: none;
+    padding: 10px 20px;
+    font-weight: 600;
+}
+
+.badge {
+    padding: 8px 12px;
+    font-weight: 500;
+}
+
+/* Print-friendly styles */
+@media print {
+    .btn, nav { display: none !important; }
+    .card { box-shadow: none; border: 1px solid #ddd; }
+}

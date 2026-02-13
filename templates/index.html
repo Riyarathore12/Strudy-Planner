@@ -1,0 +1,136 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="text-center mb-5">
+            <h1 class="display-5 fw-bold text-white">Prep<span style="color:#38bdf8">AI</span></h1>
+            <p class="text-secondary">Last-minute exam strategy powered by AI logic.</p>
+        </div>
+
+        <div class="glass-card p-4">
+            <form action="/generate" method="POST" id="plannerForm">
+                
+                <div class="row g-3 mb-4">
+                    <div class="col-md-8">
+                        <label class="form-label small text-uppercase fw-bold text-muted">Subject</label>
+                        <input type="text" name="subject" id="subjectInput" class="form-control" placeholder="e.g. Quantum Physics" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small text-uppercase fw-bold text-muted">Total Hours</label>
+                        <input type="number" name="hours" id="hoursInput" class="form-control" placeholder="Hrs" required>
+                    </div>
+                </div>
+
+                <div class="mb-4 p-3 rounded-3" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05);">
+                    <label class="form-label small text-uppercase fw-bold text-primary">
+                        <i data-lucide="clock" class="size-4 me-1"></i> Study Start Time
+                    </label>
+                    <input type="time" name="start_time" class="form-control bg-dark text-white border-secondary" required>
+                </div>
+
+                <div class="mb-4 text-center">
+                    <button type="button" id="voiceBtn" class="btn btn-outline-info rounded-pill px-4 w-100 mb-2">
+                        <i data-lucide="mic" class="me-2"></i> Click to Speak Topics
+                    </button>
+                    <p id="voiceStatus" class="small text-muted">Example: "Add Arrays and Linked List for 5 hours"</p>
+                </div>
+
+                <div id="topic-container">
+                    <label class="form-label small text-uppercase fw-bold text-muted">Exam Topics</label>
+                    <div class="input-group mb-3 topic-row">
+                        <input type="text" name="topic_name[]" class="form-control" placeholder="Topic name..." required>
+                        <select name="difficulty[]" class="form-select" style="max-width: 120px;">
+                            <option>Easy</option>
+                            <option>Medium</option>
+                            <option>Hard</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button type="button" class="btn btn-link text-decoration-none p-0 mb-4" onclick="addTopic()" style="color:#38bdf8">
+                    <i data-lucide="plus-circle" class="size-4"></i> Add another topic
+                </button>
+
+                <button type="submit" class="btn btn-primary w-100 mt-2 py-3 fw-bold shadow-lg">
+                    <i data-lucide="sparkles" class="me-2"></i> Generate Study Plan
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    // 1. Voice Recognition Logic
+    const voiceBtn = document.getElementById('voiceBtn');
+    const voiceStatus = document.getElementById('voiceStatus');
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    if (SpeechRecognition) {
+        const recognition = new SpeechRecognition();
+        recognition.lang = 'en-US';
+
+        voiceBtn.onclick = () => {
+            recognition.start();
+            voiceStatus.innerText = "Listening... Speak topics clearly!";
+            voiceBtn.classList.replace('btn-outline-info', 'btn-danger');
+        };
+
+        recognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript.toLowerCase();
+            voiceStatus.innerText = "Heard: " + transcript;
+            voiceBtn.classList.replace('btn-danger', 'btn-outline-info');
+            parseVoiceCommand(transcript);
+        };
+
+        recognition.onerror = () => {
+            voiceStatus.innerText = "Mic error. Please type manually.";
+            voiceBtn.classList.replace('btn-danger', 'btn-outline-info');
+        };
+    }
+
+    // 2. Smart Parser
+    function parseVoiceCommand(text) {
+        // Extract Hours
+        const hourMatch = text.match(/(\d+)\s*hour/);
+        if (hourMatch) {
+            document.getElementById('hoursInput').value = hourMatch[1];
+        }
+
+        // Clean text to get topics
+        let cleanText = text.replace(/add/g, '').replace(/for \d+ hours/g, '').replace(/please/g, '');
+        const topics = cleanText.split(/and|,/).map(t => t.trim());
+
+        // Fill existing empty row first, then add new ones
+        const firstRowInput = document.querySelector('input[name="topic_name[]"]');
+        
+        topics.forEach((topic, index) => {
+            if (topic.length > 1) {
+                if (index === 0 && firstRowInput.value === "") {
+                    firstRowInput.value = topic;
+                } else {
+                    addTopic(topic);
+                }
+            }
+        });
+    }
+
+    // 3. Add Topic Row Function
+    function addTopic(value = "") {
+        const container = document.getElementById('topic-container');
+        const div = document.createElement('div');
+        div.className = 'input-group mb-3 topic-row shadow-sm';
+        div.innerHTML = `
+            <input type="text" name="topic_name[]" class="form-control" value="${value}" placeholder="Topic name..." required>
+            <select name="difficulty[]" class="form-select" style="max-width: 120px;">
+                <option>Easy</option>
+                <option>Medium</option>
+                <option>Hard</option>
+            </select>
+            <button type="button" class="btn btn-outline-secondary" onclick="this.parentElement.remove()">×</button>
+        `;
+        container.appendChild(div);
+        if (window.lucide) { lucide.createIcons(); }
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,429 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="d-flex justify-content-between align-items-end mb-4">
+            <div>
+                <h2 class="text-white fw-bold mb-0">{{ subject }} Strategy</h2>
+                <p class="text-secondary mb-0">AI-Optimized Master Plan ({{ hours }} Hours)</p>
+            </div>
+            <div class="text-end">
+                <span class="small text-muted text-uppercase fw-bold">Overall Progress</span>
+                <h3 class="text-info fw-bold mb-0" id="progressPercent">0%</h3>
+            </div>
+        </div>
+
+        
+    
+</div>
+        <div class="progress mb-4" style="height: 12px; background: rgba(255,255,255,0.05); border-radius: 20px; border: 1px solid rgba(255,255,255,0.1);">
+            <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-animated bg-info" role="progressbar" style="width: 0%"></div>
+        </div>
+
+        <div class="row g-3 mb-5">
+            <div class="col-md-6">
+                <div class="glass-card p-4 text-center h-100 position-relative overflow-hidden border-info">
+                    <h6 class="text-muted small text-uppercase fw-bold">AI Success Forecast</h6>
+                    <div class="display-4 fw-bold mt-2" style="color: #38bdf8; text-shadow: 0 0 20px rgba(56,189,248,0.4);">{{ success_chance }}</div>
+                    <div class="mt-4 text-start">
+                        <div class="d-flex justify-content-between small mb-1">
+                            <span>Syllabus Coverage Risk</span>
+                            <span id="riskLevel" class="text-success fw-bold">Low Risk</span>
+                        </div>
+                        <div class="progress" style="height: 6px; background: rgba(255,255,255,0.05);">
+                            <div id="riskBar" class="progress-bar bg-success" style="width: 20%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="glass-card p-4 h-100 d-flex flex-column justify-content-center border-primary">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="bg-primary p-2 rounded-3 me-3 shadow-sm">
+                            <i data-lucide="lightbulb" class="text-white"></i>
+                        </div>
+                        <h5 class="mb-0 text-white fw-bold">AI Priority Insight</h5>
+                    </div>
+                    <p class="text-secondary mb-0" style="font-size: 0.95rem; line-height: 1.6;">
+                        "Based on your exam date, focusing on <b>{{ plan[0].name if plan else 'Key Topics' }}</b> will yield the highest ROI. Use the 'Trick' button for fast memorization."
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="glass-card p-3 mb-5 d-flex justify-content-between align-items-center border-warning shadow-lg">
+            <div class="d-flex align-items-center">
+                <div class="bg-warning p-2 rounded-circle me-3 shadow-sm">
+                    <i data-lucide="music" class="text-dark"></i>
+                </div>
+                <div>
+                    <h6 class="text-white mb-0 small fw-bold">Lo-Fi Deep Focus Beats</h6>
+                    <p class="text-muted small mb-0">Active Session: {{ subject }}</p>
+                </div>
+            </div>
+            <div class="d-flex gap-3 align-items-center">
+                <audio id="studyMusic" loop>
+                    <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+                </audio>
+                <button onclick="toggleMusic()" id="musicBtn" class="btn btn-sm btn-outline-warning rounded-pill px-3">
+                    <i data-lucide="play" class="me-1 size-4"></i> Play Beats
+                </button>
+                <div class="vr bg-secondary opacity-25" style="height: 30px;"></div>
+                <button onclick="toggleFocusMode()" class="btn btn-sm btn-info rounded-pill text-dark fw-bold px-4 shadow-sm">
+                    <i data-lucide="maximize" class="me-1 size-4"></i> Start Focus Mode
+                </button>
+            </div>
+        </div>
+
+        <div class="mb-5">
+            <h5 class="text-white mb-4 small text-uppercase fw-bold" style="letter-spacing: 2px; border-left: 3px solid #38bdf8; padding-left: 15px;">
+                <i data-lucide="layout-grid" class="me-2 text-info"></i> Instant Revision Matrix
+            </h5>
+            <div class="row g-3">
+                {% for item in plan %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="glass-card p-3 h-100 border-white-10 hover-lift">
+                        <div class="mb-3 d-flex justify-content-between align-items-start">
+                            <span class="badge bg-dark text-info border border-info px-2 py-1">{{ item.name }}</span>
+                            <span class="text-muted" style="font-size: 0.7rem;">{{ item.difficulty }}</span>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-sm btn-warning text-dark fw-bold shadow-sm" type="button" data-bs-toggle="collapse" data-bs-target="#rev-{{ loop.index }}">
+                                <i data-lucide="zap" class="me-2 size-4"></i> Instant Revision
+                            </button>
+                            <a href="https://www.youtube.com/results?search_query={{ subject }}+{{ item.name }}+one+shot" target="_blank" class="btn btn-sm btn-outline-danger">
+                                <i data-lucide="video" class="me-2 size-4"></i> YouTube Tutorial
+                            </a>
+                        </div>
+                        <div class="collapse mt-3" id="rev-{{ loop.index }}">
+                            <div class="p-3 bg-black bg-opacity-40 border border-warning rounded shadow-inner">
+                                <h6 class="text-warning small fw-bold mb-2">Memory Trick (Mnemonic):</h6>
+                                <p class="small text-white italic mb-3" style="line-height: 1.4;">"{{ item.mnemonic }}"</p>
+                                <h6 class="text-info small fw-bold mb-2">Quick Concepts:</h6>
+                                <p class="small text-secondary mb-0">{{ item.quick_notes if item.quick_notes else "Core principles and formulas." }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="row mb-5 g-4">
+            <div class="col-md-5">
+                <div class="glass-card p-4 h-100 border-warning position-relative overflow-hidden">
+                    <div class="position-absolute top-0 end-0 p-2 opacity-10"><i data-lucide="clock" size="60"></i></div>
+                    <h6 class="text-muted small text-uppercase fw-bold mb-4"><i data-lucide="timer" class="me-2 text-warning"></i> Session Countdown</h6>
+                    <div class="d-flex align-items-center justify-content-center text-white">
+                        <div class="text-center mx-3"><h1 class="fw-bold mb-0" id="hoursLeft">--</h1><span class="small text-muted">Hrs</span></div>
+                        <div class="h1 fw-bold text-warning mb-0">:</div>
+                        <div class="text-center mx-3"><h1 class="fw-bold mb-0" id="minsLeft">--</h1><span class="small text-muted">Min</span></div>
+                        <div class="h1 fw-bold text-warning mb-0">:</div>
+                        <div class="text-center mx-3"><h1 class="fw-bold mb-0" id="secsLeft">--</h1><span class="small text-muted">Sec</span></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-7">
+                <div class="glass-card p-3 h-100 border-info">
+                    <h6 class="text-muted small text-uppercase fw-bold d-flex justify-content-between align-items-center">
+                        <span><i data-lucide="edit-3" class="me-2 text-info"></i> Smart Scratchpad</span>
+                        <span id="saveStatus" class="badge bg-success-soft text-success small" style="display:none;">Saved!</span>
+                    </h6>
+                    <textarea id="scratchpad" class="form-control bg-transparent border-0 text-white mt-2" placeholder="Scribble important formulas or points here..." style="resize: none; height: 120px; font-family: 'Fira Code', monospace; font-size: 0.9rem;"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <div class="glass-card p-0 overflow-hidden mb-5 shadow-lg border-white-10">
+            <div class="px-4 py-3 border-bottom border-white-5 d-flex justify-content-between align-items-center">
+                <h6 class="mb-0 text-white fw-bold">Master Study Schedule</h6>
+                <span class="badge bg-info text-dark">{{ plan|length }} Modules</span>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-borderless text-white align-middle mb-0">
+                    <thead style="background: rgba(255,255,255,0.03);">
+                        <tr class="text-muted small text-uppercase" style="letter-spacing: 1px;">
+                            <th class="ps-4 py-3">Done</th>
+                            <th>Time Slot</th>
+                            <th>Topic Name</th>
+                            <th>Complexity</th>
+                            <th class="text-end pe-4">AI Research Tools</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in plan %}
+                        <tr class="topic-row border-bottom border-white-5">
+                            <td class="ps-4">
+                                <div class="form-check custom-checkbox">
+                                    <input type="checkbox" class="form-check-input study-check" onchange="updateProgress()">
+                                </div>
+                            </td>
+                            <td class="text-warning fw-bold small">{{ item.slot }}</td>
+                            <td>
+                                <div class="fw-bold text-white">{{ item.name }}</div>
+                                <div class="text-muted small" style="font-size: 0.75rem;">AI Suggested Focus</div>
+                            </td>
+                            <td>
+                                <span class="badge rounded-pill {% if item.difficulty == 'Hard' %}bg-danger{% elif item.difficulty == 'Medium' %}bg-warning text-dark{% else %}bg-success{% endif %}" style="min-width: 60px;">
+                                    {{ item.difficulty }}
+                                </span>
+                            </td>
+                            <td class="text-end pe-4">
+                                <div class="btn-group shadow-sm">
+                                    <button class="btn btn-sm btn-info text-dark fw-bold px-3" onclick="showExplanation('{{ item.name }}', '{{ item.explanation | replace("'", "\\'") }}', '{{ item.mnemonic | replace("'", "\\'") }}')">Details</button>
+                                    <button class="btn btn-sm btn-outline-primary px-3" onclick="startQuiz('{{ item.name }}')">Quiz</button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="explanationModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content bg-dark text-white border-info shadow-lg">
+            <div class="modal-header border-secondary bg-black bg-opacity-20">
+                <h5 class="modal-title d-flex align-items-center" id="expTopicTitle">
+                    <i data-lucide="brain" class="me-2 text-info"></i> Detailed Topic Insight
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="mb-4">
+                    <h6 class="text-warning fw-bold small text-uppercase mb-2"><i data-lucide="award" class="me-2 size-4"></i> Exam Cheat Trick:</h6>
+                    <div class="p-3 rounded bg-warning bg-opacity-10 border border-warning border-opacity-25">
+                        <p id="modalMnemonic" class="italic mb-0 text-white" style="font-size: 1.1rem;"></p>
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <h6 class="text-info fw-bold small text-uppercase mb-2"><i data-lucide="book-open" class="me-2 size-4"></i> Detailed AI Explanation:</h6>
+                    <p id="expContent" style="line-height: 1.7; color: #cbd5e1;"></p>
+                </div>
+                <hr class="border-white-10">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="small text-muted">Ready to dive deeper?</span>
+                    <div class="d-flex gap-2">
+                        <a id="googleBtn" href="#" target="_blank" class="btn btn-sm btn-outline-light rounded-pill px-3">
+                            <i data-lucide="search" class="me-1 size-4"></i> Google Detail
+                        </a>
+                        <a id="chatgptBtn" href="#" target="_blank" class="btn btn-sm btn-outline-primary rounded-pill px-3">
+                            <i data-lucide="message-square" class="me-1 size-4"></i> Ask ChatGPT
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="quizModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark text-white border-primary shadow-lg">
+            <div class="modal-header border-secondary">
+                <h5 class="fw-bold"><i data-lucide="help-circle" class="me-2 text-primary"></i> AI Knowledge Check</h5>
+                <button class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div id="quizBody" class="modal-body p-4">
+                </div>
+            <div class="modal-footer border-secondary">
+                <button class="btn btn-primary w-100 fw-bold" onclick="checkQuiz()">Evaluate My Score</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="focusOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle, #0f172a 0%, #000 100%); z-index: 9999; justify-content: center; align-items: center; flex-direction: column; color: #38bdf8;">
+    <div class="text-center">
+        <h6 class="text-uppercase tracking-widest opacity-50 mb-4">Deep Work Session In Progress</h6>
+        <h1 class="display-1 fw-bold mb-2 shadow-sm" id="overlayClock" style="font-family: 'JetBrains Mono', monospace; letter-spacing: -5px;">00:00</h1>
+        <p class="h4 text-white opacity-75 mb-5">{{ subject }}</p>
+        <div class="spinner-grow text-info mb-5" role="status"></div>
+        <br>
+        <button onclick="toggleFocusMode()" class="btn btn-outline-info rounded-pill px-5 py-2">
+            <i data-lucide="minimize" class="me-2"></i> Exit Focus Mode
+        </button>
+    </div>
+</div>
+
+<script>
+let currentQuiz = [];
+
+// 1. Music Player Logic
+function toggleMusic() {
+    const audio = document.getElementById('studyMusic');
+    const btn = document.getElementById('musicBtn');
+    if (audio.paused) {
+        audio.play();
+        btn.innerHTML = '<i data-lucide="pause" class="me-1 size-4"></i> Pause Beats';
+        btn.classList.replace('btn-outline-warning', 'btn-warning');
+    } else {
+        audio.pause();
+        btn.innerHTML = '<i data-lucide="play" class="me-1 size-4"></i> Play Beats';
+        btn.classList.replace('btn-warning', 'btn-outline-warning');
+    }
+    lucide.createIcons();
+}
+
+// 2. Explanation Modal with External AI Links
+function showExplanation(name, text, mnemonic) {
+    document.getElementById('expTopicTitle').innerText = "AI Insight: " + name;
+    document.getElementById('expContent').innerText = text;
+    document.getElementById('modalMnemonic').innerText = mnemonic || "No specific mnemonic provided. Focus on logic.";
+    
+    // External Tools Links
+    document.getElementById('googleBtn').href = `https://www.google.com/search?q=${encodeURIComponent(name + " " + "{{ subject }}")}`;
+    document.getElementById('chatgptBtn').href = `https://chatgpt.com/?q=${encodeURIComponent("Explain " + name + " in the context of " + "{{ subject }}")}`;
+    
+    new bootstrap.Modal(document.getElementById('explanationModal')).show();
+}
+
+// 3. Dynamic Timer Restored
+function startCountdown() {
+    const target = new Date().getTime() + ({{ hours }} * 60 * 60 * 1000);
+    setInterval(() => {
+        const now = new Date().getTime();
+        const dist = target - now;
+        if (dist < 0) return;
+        
+        const h = Math.floor(dist / (1000 * 60 * 60));
+        const m = Math.floor((dist % (1000 * 60 * 60)) / (1000 * 60));
+        const s = Math.floor((dist % (1000 * 60)) / 1000);
+        
+        document.getElementById("hoursLeft").innerText = h.toString().padStart(2, '0');
+        document.getElementById("minsLeft").innerText = m.toString().padStart(2, '0');
+        document.getElementById("secsLeft").innerText = s.toString().padStart(2, '0');
+    }, 1000);
+}
+
+// 4. Progress Tracking
+function updateProgress() {
+    const total = document.querySelectorAll('.study-check').length;
+    const checked = document.querySelectorAll('.study-check:checked').length;
+    const p = total ? Math.round((checked / total) * 100) : 0;
+    
+    document.getElementById('progressBar').style.width = p + '%';
+    document.getElementById('progressPercent').innerText = p + '%';
+    
+    // Update Risk Meter Inverse
+    const riskBar = document.getElementById('riskBar');
+    const riskLvl = document.getElementById('riskLevel');
+    const riskVal = 100 - p;
+    riskBar.style.width = riskVal + '%';
+    
+    if(p > 70) { 
+        riskBar.className = "progress-bar bg-success"; 
+        riskLvl.innerText = "Negligible Risk";
+        riskLvl.className = "text-success fw-bold";
+    } else if(p > 30) {
+        riskBar.className = "progress-bar bg-warning";
+        riskLvl.innerText = "Moderate Risk";
+        riskLvl.className = "text-warning fw-bold";
+    } else {
+        riskBar.className = "progress-bar bg-danger";
+        riskLvl.innerText = "High Risk";
+        riskLvl.className = "text-danger fw-bold";
+    }
+}
+
+// 5. Focus Mode
+function toggleFocusMode() {
+    const o = document.getElementById('focusOverlay');
+    const isActive = o.style.display === 'flex';
+    o.style.display = isActive ? 'none' : 'flex';
+    
+    if(!isActive) {
+        document.body.style.overflow = 'hidden';
+        window.focusInt = setInterval(() => {
+            document.getElementById('overlayClock').innerText = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'});
+        }, 1000);
+    } else {
+        document.body.style.overflow = 'auto';
+        clearInterval(window.focusInt);
+    }
+}
+
+// 6. AI Quiz Generator
+async function startQuiz(topic) {
+    const qBody = document.getElementById('quizBody');
+    qBody.innerHTML = `
+        <div class="text-center py-4">
+            <div class="spinner-border text-primary mb-3"></div>
+            <p>AI is generating custom questions for ${topic}...</p>
+        </div>`;
+    new bootstrap.Modal(document.getElementById('quizModal')).show();
+    
+    try {
+        const res = await fetch('/get_quiz', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({topic: topic})
+        });
+        currentQuiz = await res.json();
+        let h = '';
+        currentQuiz.forEach((q, i) => {
+            h += `<div class='mb-4 quiz-q-block'>
+                    <h6 class='fw-bold text-white mb-2'>${i+1}. ${q.q}</h6>`;
+            q.options.forEach((o, j) => {
+                h += `<div class='form-check mb-2'>
+                        <input class='form-check-input' type='radio' name='q${i}' id='q${i}o${j}' value='${j}'>
+                        <label class='form-check-label small' for='q${i}o${j}'>${o}</label>
+                      </div>`;
+            });
+            h += `</div>`;
+        });
+        qBody.innerHTML = h || "Could not generate quiz. Try again.";
+    } catch(e) { qBody.innerHTML = "Error connecting to AI Server."; }
+}
+
+function checkQuiz() {
+    let score = 0;
+    currentQuiz.forEach((q, i) => {
+        const sel = document.querySelector(`input[name="q${i}"]:checked`);
+        if (sel && parseInt(sel.value) === q.correct) score++;
+    });
+    alert(`AI Evaluation Complete!\nYour Score: ${score} out of ${currentQuiz.length}`);
+}
+
+// Initialization
+document.addEventListener('DOMContentLoaded', () => {
+    startCountdown();
+    lucide.createIcons();
+    
+    // Scratchpad Auto-save
+    const pad = document.getElementById('scratchpad');
+    const status = document.getElementById('saveStatus');
+    pad.value = localStorage.getItem('notes_{{ subject }}') || "";
+    pad.oninput = () => {
+        localStorage.setItem('notes_{{ subject }}', pad.value);
+        status.style.display = 'inline-block';
+        setTimeout(() => { status.style.display = 'none'; }, 1500);
+    };
+});
+// --- PDF EXTRACTION LOGIC START ---
+
+// File name update listener
+document.getElementById('pdfFile').addEventListener('change', function(e) {
+    if(this.files[0]) {
+        document.getElementById('fileName').innerText = this.files[0].name;
+    }
+});
+// --- PDF EXTRACTION LOGIC END ---
+</script>
+
+<style>
+    .glass-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 18px; backdrop-filter: blur(12px); transition: all 0.3s ease; }
+    .hover-lift:hover { transform: translateY(-5px); border-color: rgba(56, 189, 248, 0.4); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+    .italic { font-style: italic; }
+    .border-white-10 { border: 1px solid rgba(255, 255, 255, 0.1); }
+    .border-white-5 { border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
+    .quiz-q-block { background: rgba(255,255,255,0.02); padding: 15px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.05); }
+    .bg-success-soft { background: rgba(34, 197, 94, 0.15); }
+    #scratchpad:focus { outline: none; box-shadow: none; }
+    .custom-checkbox .form-check-input { width: 1.3em; height: 1.3em; background-color: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.2); cursor: pointer; }
+    .custom-checkbox .form-check-input:checked { background-color: #38bdf8; border-color: #38bdf8; }
+</style>
+{% endblock %}
